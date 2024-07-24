@@ -1,0 +1,15 @@
+{
+  "name": "google-libphonenumber-coverage",
+  "version": "1.0.0",
+  "description": "Converge in google-libphonenumber (Specifically Area Codes)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "google-libphonenumber": "^3.2.37"
+  }
+}
