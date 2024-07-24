@@ -21,6 +21,9 @@ jobs:
       - name: Run validation script
         run: node validateNumbers.js > public/output.txt
 
+      - name: List files in public directory
+        run: ls -R public
+
   deploy:
     needs: build
     runs-on: ubuntu-latest
