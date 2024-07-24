@@ -1,4 +1,5 @@
 const { PhoneNumberFormat, PhoneNumberUtil } = require('google-libphonenumber');
+const fs = require('fs');
 const phoneUtil = PhoneNumberUtil.getInstance();
 
 const areaCodes = [
@@ -43,16 +44,20 @@ const areaCodes = [
 ];
 
 async function testAreaCodes() {
-    // US only
+    let output = '';
+
     for (const code of areaCodes) {
         const phoneNumber = `1${code}4567890`;
         try {
-        let number = phoneUtil.parseAndKeepRawInput(phoneNumber, 'US');
-        console.log(`Area Code: ${code}, Number: ${phoneNumber}, Valid: ${phoneUtil.isValidNumber(number)}`);
+            let number = phoneUtil.parseAndKeepRawInput(phoneNumber, 'US');
+            output += `Area Code: ${code}, Number: ${phoneNumber}, Valid: ${phoneUtil.isValidNumber(number)}\n`;
         } catch (error) {
-        console.log(`Area Code: ${code}, Number: ${phoneNumber}, Error: Invalid number`);
+            output += `Area Code: ${code}, Number: ${phoneNumber}, Error: Invalid number\n`;
         }
     }
+
+    // Write the output to a file
+    fs.writeFileSync('./public/output.txt', output);
 }
 
 testAreaCodes();
