@@ -1,4 +1,4 @@
-name: Node.js CI
+name: Deploy to GitHub Pages
 
 on:
   push:
@@ -14,8 +14,12 @@ jobs:
       uses: actions/setup-node@v2
       with:
         node-version: '14'
-    - run: npm install
-    - run: node validateNumbers.js > output.txt
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Run validation script
+      run: node validateNumbers.js > public/output.txt
 
   deploy:
     needs: build
@@ -25,5 +29,5 @@ jobs:
       uses: peaceiris/actions-gh-pages@v3
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./
+        publish_dir: ./public
         publish_branch: gh-pages
