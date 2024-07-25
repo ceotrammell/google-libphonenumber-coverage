@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phone Validation Results</title>
+</head>
+<body>
+    <h1>Phone Validation Results</h1>
+    <pre id="results"></pre>
+
+    <script>
+        fetch('output.txt')
+            .then(response => response.text())
+            .then(data => document.getElementById('results').innerText = data);
+    </script>
+</body>
+</html>
