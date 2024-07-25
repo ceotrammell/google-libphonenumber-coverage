@@ -35,8 +35,8 @@ jobs:
           publish_dir: ./public
           publish_branch: gh-pages
 
-- name: Verify gh-pages branch after deployment
-  run: |
-    git clone --branch=gh-pages https://github.com/ceotrammell/google-libphonenumber-coverage.git gh-pages-check
-    cd gh-pages-check
-    ls -R
+      - name: Verify gh-pages branch after deployment
+        run: |
+          git clone --branch=gh-pages https://github.com/ceotrammell/google-libphonenumber-coverage.git gh-pages-check
+          cd gh-pages-check
+          ls -R
