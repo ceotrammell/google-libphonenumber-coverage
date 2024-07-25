@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      
+
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
@@ -34,3 +34,9 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./public
           publish_branch: gh-pages
+
+- name: Verify gh-pages branch after deployment
+  run: |
+    git clone --branch=gh-pages https://github.com/ceotrammell/google-libphonenumber-coverage.git gh-pages-check
+    cd gh-pages-check
+    ls -R
