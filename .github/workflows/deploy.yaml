@@ -29,8 +29,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
-      - run: npm ci
-      - run: npm run build
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run validation script
+        run: node validateNumbers.js > public/output.txt
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v4
