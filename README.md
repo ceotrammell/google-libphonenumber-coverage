@@ -5,10 +5,20 @@ This repository demonstrates the coverage of area codes provided by the npm pack
 ## Current Version
 
 The current version of the `google-libphonenumber` npm package can be found on its [npm page](https://www.npmjs.com/package/google-libphonenumber).
+The coverage represents version `3.2.37`
 
-## Usage
+## Usage Online
 
 To explore the coverage of area codes, visit the [coverage site](https://ceotrammell.github.io/google-libphonenumber-coverage/) where you can view and search for specific area codes supported by the `google-libphonenumber` package.
+
+## Usage Local
+- Clone repo
+- cd into repo
+- `npm i`
+- `npm install -g http-server`
+- `cd /public`
+- `http-server`
+- access via `http://localhost:8080/` or avialable port initiated
 
 ## Contribution
 
