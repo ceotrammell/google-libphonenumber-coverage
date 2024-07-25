@@ -1,42 +1,40 @@
-name: Deploy to GitHub Pages
+name: GitHub Pages
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
+  pull_request:
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  deploy:
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: write
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
+      - name: Setup Node
+        uses: actions/setup-node@v3
         with:
           node-version: '14'
 
-      - name: Install dependencies
-        run: npm install
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
 
-      - name: Run validation script
-        run: node validateNumbers.js > public/output.txt
+      - run: npm ci
+      - run: npm run build
 
-      - name: List files in public directory
-        run: ls -R public
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Deploy to GitHub Pages
+      - name: Deploy
         uses: peaceiris/actions-gh-pages@v4
+        if: github.ref == 'refs/heads/main'
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./public
-          publish_branch: gh-pages
-
-      - name: Verify gh-pages branch after deployment
-        run: |
-          git clone --branch=gh-pages https://github.com/ceotrammell/google-libphonenumber-coverage.git gh-pages-check
-          cd gh-pages-check
-          ls -R
