@@ -3,16 +3,145 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Phone Validation Results:</title>
+    <title>Phone Validation Results</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        .scroll-to-bottom {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #3490dc;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            padding: 10px;
+            cursor: pointer;
+            box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .scroll-to-bottom svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .tab-button {
+            margin-right: 5px;
+        }
+    </style>
 </head>
-<body>
-    <h1>Phone Validation Results</h1>
-    <pre id="results"></pre>
+<body class="bg-gray-100 text-gray-800">
+    <div class="container mx-auto p-5">
+        <h1 class="text-2xl font-bold text-center mb-5">Phone Validation Results</h1>
+
+        <div class="flex justify-center mb-5">
+            <input type="text" id="searchBar" class="border border-gray-300 rounded p-2 w-2/3" placeholder="Search by area code or number...">
+        </div>
+
+        <div class="tabs flex justify-center mb-4">
+            <button id="valid-tab" class="tab-button bg-blue-500 text-white py-2 px-4 rounded-tl rounded-tr focus:outline-none focus:bg-blue-700">
+                Valid
+            </button>
+            <button id="invalid-tab" class="tab-button bg-gray-300 text-gray-700 py-2 px-4 rounded-tl rounded-tr focus:outline-none focus:bg-gray-400">
+                Invalid
+            </button>
+        </div>
+
+        <div id="valid-results" class="results p-4 bg-white rounded-b shadow-md">
+            <!-- Valid results will be inserted here -->
+        </div>
+
+        <div id="invalid-results" class="results p-4 bg-white rounded-b shadow-md hidden">
+            <!-- Invalid results will be inserted here -->
+        </div>
+    </div>
+
+    <button id="scrollToBottom" class="scroll-to-bottom" title="Scroll to Bottom">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+        </svg>
+    </button>
 
     <script>
+        let validData = '';
+        let invalidData = '';
+
+        document.getElementById('valid-tab').addEventListener('click', () => {
+            document.getElementById('valid-results').classList.remove('hidden');
+            document.getElementById('invalid-results').classList.add('hidden');
+            document.getElementById('valid-tab').classList.add('bg-blue-500', 'text-white');
+            document.getElementById('invalid-tab').classList.remove('bg-blue-500', 'text-white');
+            document.getElementById('invalid-tab').classList.add('bg-gray-300', 'text-gray-700');
+            filterResults();
+        });
+
+        document.getElementById('invalid-tab').addEventListener('click', () => {
+            document.getElementById('valid-results').classList.add('hidden');
+            document.getElementById('invalid-results').classList.remove('hidden');
+            document.getElementById('invalid-tab').classList.add('bg-blue-500', 'text-white');
+            document.getElementById('valid-tab').classList.remove('bg-blue-500', 'text-white');
+            document.getElementById('valid-tab').classList.add('bg-gray-300', 'text-gray-700');
+            filterResults();
+        });
+
+        document.getElementById('searchBar').addEventListener('input', filterResults);
+
         fetch('output.txt')
             .then(response => response.text())
-            .then(data => document.getElementById('results').innerText = data);
+            .then(data => {
+                const lines = data.split('\n');
+
+                lines.forEach(line => {
+                    if (line.trim()) {
+                        const [areaCode, number, valid] = line.match(/Area Code: (\d+), Number: (\d+), Valid: (\w+)/).slice(1);
+                        const resultItem = `
+                            <div class="result-item my-2 p-2 border-b border-gray-200">
+                                <div class="flex justify-between">
+                                    <div><strong>Area Code:</strong> ${areaCode}</div>
+                                    <div><strong>Number:</strong> ${number}</div>
+                                    <div><strong>Valid:</strong> ${valid}</div>
+                                </div>
+                            </div>`;
+
+                        if (valid === 'true') {
+                            validData += resultItem;
+                        } else {
+                            invalidData += resultItem;
+                        }
+                    }
+                });
+
+                document.getElementById('valid-results').innerHTML = validData;
+                document.getElementById('invalid-results').innerHTML = invalidData;
+            });
+
+        // Scroll to bottom button
+        const scrollToBottomButton = document.getElementById('scrollToBottom');
+
+        window.addEventListener('scroll', () => {
+            if (window.innerHeight + window.scrollY < document.body.offsetHeight - 100) {
+                scrollToBottomButton.style.display = 'block';
+            } else {
+                scrollToBottomButton.style.display = 'none';
+            }
+        });
+
+        scrollToBottomButton.addEventListener('click', () => {
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        });
+
+        function filterResults() {
+            const query = document.getElementById('searchBar').value.toLowerCase();
+            const isShowingValid = !document.getElementById('valid-results').classList.contains('hidden');
+            const resultsContainer = isShowingValid ? document.getElementById('valid-results') : document.getElementById('invalid-results');
+            const allResults = isShowingValid ? validData : invalidData;
+
+            const filteredData = allResults.split('<div class="result-item my-2 p-2 border-b border-gray-200">')
+                .filter(item => item.toLowerCase().includes(query))
+                .join('<div class="result-item my-2 p-2 border-b border-gray-200">');
+
+            resultsContainer.innerHTML = `<div class="result-item my-2 p-2 border-b border-gray-200">${filteredData}`;
+        }
     </script>
 </body>
 </html>
